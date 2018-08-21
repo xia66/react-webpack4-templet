@@ -1,90 +1,119 @@
-var path = require('path')
-var webpack = require('webpack')
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var OpenBrowserPlugin = require('open-browser-webpack-plugin');
+const path = require('path');
+var webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');//导入生成html文件的插件
+const MiniCssExtractPlugin = require("mini-css-extract-plugin") //独立打包css文件插件
 
-// var nodeModulesPath = path.resolve(__dirname, 'node_modules')
-// console.log(process.env.NODE_ENV)
-
+//向外暴露一个配置对象，commonjs规范（因为webpack是基于node构建）
+//webpack默认只能打包处理.js后缀的文件，像.jpg .vue等文件无法主动处理，所以需要配置第三方loader
 module.exports = {
+    mode: 'development', //development  production ( 生产环境会将代码压缩 )
+    //在webpack4中有一大特性是约定大于配置，默认打包入口路径是'src/index.js'，打包输出路径是'dist/main.js'
     entry: path.resolve(__dirname, 'src/Root.jsx'),
+
     output: {
         path: __dirname + "/build",
         filename: "bundle.js"
     },
-
+    //解析配置，简化引入文件书写
     resolve:{
-        extensions:['', '.js','.jsx']
+    // 解析模块请求的选项
+    // （不适用于对 loader 解析）
+        // 使用的扩展名
+        extensions:['*', '.js','.jsx'],//自动解析的后缀名
+        alias:{
+            // 模块别名列表
+            $Static:path.resolve(__dirname,'src/static/'),
+            $Pubilc:path.resolve(__dirname,'src/public/'),
+            $Containers:path.resolve(__dirname,'src/containers/'),
+            $Components:path.resolve(__dirname,'src/components/'),
+        }
     },
-
-    module: {
-        // preLoaders: [
-        //     // 报错 ？？？？？
-        //     {test: /\.(js|jsx)$/, loader: "eslint-loader", exclude: /node_modules/}
-        // ],
-        loaders: [
-            { test: /\.(js|jsx)$/, exclude: /node_modules/, loader: 'babel' },
-            { test: /\.less$/, exclude: /node_modules/, loader: 'style!css!postcss!less' },
-            //{ test: /\.css$/, exclude: /node_modules/, loader: 'style!css!postcss' },
-            { test:/\.(png|gif|jpg|jpeg|bmp)$/i, loader:'url-loader?limit=5000' },  // 限制大小5kb
-            { test:/\.(png|woff|woff2|svg|ttf|eot)($|\?)/i, loader:'url-loader?limit=5000'}, // 限制大小小于5k
-            //这个是antd的配置
-            { test: /\.css$/, loader: 'style-loader!css-loader' }
-        ]
-    },
-
-    eslint: {
-        configFile: '.eslintrc' // Rules for eslint
-    },
-
-    postcss: [
-        require('autoprefixer') //调用autoprefixer插件，例如 display: flex
-    ],
 
     plugins: [
-        new webpack.optimize.DedupePlugin(),
-        // html 模板插件
+        //模板插件
         new HtmlWebpackPlugin({
-            template: __dirname + '/src/index.tmpl.html'
+            template: path.join(__dirname, 'src/index.tmpl.html'),//模板文件
+            filename: 'index.html'//生成文件名
         }),
-
-        // 热加载插件
-        new webpack.HotModuleReplacementPlugin(),
-
-        // 打开浏览器
-        new OpenBrowserPlugin({
-          url: 'http://localhost:9001'
+        new MiniCssExtractPlugin({//选项与htmlPlugin类似
+            filename: "index.css"
         }),
-
-        // 可在业务 js 代码中使用 __DEV__ 判断是否是dev模式（dev模式下可以提示错误、测试报告等, production模式不提示）
-        new webpack.DefinePlugin({
-          __DEV__: JSON.stringify(JSON.parse((process.env.NODE_ENV == 'dev') || 'false'))
-        }),
-
-        //将$变量挂载到window下面，可以在项目中直接使用$,不用再引用
         new webpack.ProvidePlugin({
-        $:"jquery",
-        jQuery:"jquery",
-        "window.jQuery":"jquery"
+            $:"jquery",
+            jQuery:"jquery",
+            "window.jQuery":"jquery"
+        }),
+        new webpack.optimize.SplitChunksPlugin({
+            chunks: "all",
+            minSize: 20000,
+            minChunks: 1,
+            maxAsyncRequests: 5,
+            maxInitialRequests: 3,
+            name: true
         })
     ],
 
-    devServer: {
-        /*使用代理的方式没有用
-        proxy: {
-          // 凡是 `/api` 开头的 http 请求，都会被代理到 localhost:8080 上
-          '/api': {
-            target: 'http://localhost:8080/view-web/LoginServlet',
-            changeOrigin: true,
-            secure: false
-          }
-        },*/
-        port:9001,
-        contentBase: "./public", //本地服务器所加载的页面所在的目录
-        colors: true, //终端中输出结果为彩色
-        historyApiFallback: true, //不跳转
-        inline: true, //实时刷新
-        hot: true  // 使用热加载插件 HotModuleReplacementPlugin
+    module: {//第三方loader
+        rules: [
+            {
+                test: /\.(js|jsx)$/,
+                use: 'babel-loader',
+                exclude: /node_modules/ // 在使用babel-loader时候一定要加上exclude,排除node_modules文件夹 
+            },
+            {   //css/less打包
+                test: /\.(css|less)$/,
+                include: [
+                    path.resolve(__dirname, "src")
+                ],
+                exclude: [
+                    path.resolve(__dirname, "node_modules")
+                ],
+                /*Loader必须严格按照这个顺序，不然会报错。解析顺序是从右到左*/
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    "css-loader",
+                    {
+                        loader: "postcss-loader",
+                        options: {
+                            plugins: [
+                                require("autoprefixer"), /*在这里添加*/
+                                require('postcss-px2rem')({remUnit: 5}),
+                                require('postcss-flexbugs-fixes'),
+
+                            ]
+                        }
+                    },
+                    "less-loader"
+                ]
+
+            },
+            {   //防止antd冲突的配置
+                test: /\.css$/,
+                exclude: /(src)/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    "css-loader"
+                ]
+            },
+            {
+                test:/\.(png|jpg|gif|svg)$/,
+                use:[{
+                        loader:'url-loader',
+                        options:{ // 这里的options选项参数可以定义多大的图片转换为base64
+                            name: '[name].[ext]',
+                            limit:50000, // 表示小于50kb的图片转为base64,大于50kb的是路径
+                            outputPath:'images' //定义输出的图片文件夹
+                        }
+                    },
+                    {   //压缩图片要在file-loader之后使用
+                        loader:'image-webpack-loader',
+                        options:{
+                            bypassOnDebug: true
+                        }
+                    }
+                ]
+            }
+
+        ]
     }
 }
