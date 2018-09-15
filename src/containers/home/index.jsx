@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import './index.less'
 import {Icon} from 'antd'
 import {connect } from 'react-redux'
