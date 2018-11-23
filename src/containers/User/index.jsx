@@ -1,9 +1,11 @@
 import React from 'react'
 import {HashRouter,Route,Switch,NavLink} from 'react-router-dom'
+
 export default class User extends React.PureComponent{
 	constructor(props,context){
     	super(props,context);
     }
+
     render(){
         let activeStyle={color:'red'};
     	return(
@@ -14,8 +16,8 @@ export default class User extends React.PureComponent{
                         <a className="navbar-brand">用户管理</a>
                     </div>
                     <ul className="nav">
-                        <li className='navbar-nav'><NavLink exact activeStyle={activeStyle} to="/user/1">test1</NavLink></li>
-                        <li className='navbar-nav'><NavLink activeStyle={activeStyle} to="/user/2">test2</NavLink></li>
+                        <li className='navbar-nav'><NavLink activeStyle={activeStyle} to="/user/1">test1</NavLink></li>
+                        <li className='navbar-nav'><NavLink activeStyle={activeStyle} to="/user/2">test2</NavLink></li> {/*也可以设置activeClassName来设置样式*/}
                     </ul>
                 </nav>
                 <div>
@@ -39,7 +41,7 @@ class test1 extends React.PureComponent{
     render(){
         return(
             <div>
-                test
+                test1
             </div>
         )
     }

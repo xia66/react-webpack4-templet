@@ -5,12 +5,10 @@
 import '$Static/common.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {HashRouter,BrowserRouter,Route,Switch,NavLink} from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'; 
 import {reducer} from './reducer/index.jsx'
-import Home from '$Containers/Home'
-import User from '$Containers/User'
+import Routes from './router/index.jsx'
 
 let store=createStore(reducer);
 
@@ -20,18 +18,7 @@ class App extends React.Component{
         return (
             //注入store
             <Provider store={store}>
-                {/*HashRouter匹配的是#/后的url
-                Switch是从上往下的匹配第一个*/}
-                <HashRouter>
-                    <Switch>
-                        {/*
-                        如果路径后面不加参数就无法匹配到home，导致空页面
-                        <Route exact path="/" component={Home}/>
-                        */}
-                        <Route exact path="/" component={Home}/>
-                        <Route  path="/user" component={User}/>
-                    </Switch>
-                </HashRouter>
+                <Routes/>
             </Provider>
         )
     }

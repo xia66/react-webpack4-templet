@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.jsx",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --port 3000",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --hot --inline --open --port 3000",
+    "build": "rm -rf build/** && cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "keywords": [],
   "author": "",
@@ -25,20 +25,22 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "cross-env": "^5.2.0",
+    "css-hot-loader": "^1.4.2",
     "css-loader": "^0.28.11",
+    "file-loader": "^2.0.0",
     "html-webpack-plugin": "^3.2.0",
+    "html-withimg-loader": "^0.1.16",
     "image-webpack-loader": "^4.3.1",
     "less": "^3.0.2",
     "less-loader": "^4.1.0",
     "mini-css-extract-plugin": "^0.4.0",
     "postcss-flexbugs-fixes": "^4.1.0",
     "postcss-loader": "^3.0.0",
-    "postcss-px2rem": "^0.3.0",
     "style-loader": "^0.21.0",
     "url-loader": "^1.0.1",
-    "webpack": "^4.6.0",
-    "webpack-cli": "^2.1.2",
-    "webpack-dev-server": "^3.1.4"
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.9"
   },
   "dependencies": {
     "antd": "^3.8.1",

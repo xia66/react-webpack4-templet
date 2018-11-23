@@ -12,7 +12,7 @@ module.exports = {
 
     output: {
         path: __dirname + "/build",
-        filename: "bundle.js"
+        filename: "bundle.js",
     },
     //解析配置，简化引入文件书写
     resolve:{
@@ -71,22 +71,20 @@ module.exports = {
                 ],
                 /*Loader必须严格按照这个顺序，不然会报错。解析顺序是从右到左*/
                 use: [
-                    MiniCssExtractPlugin.loader,
+                    'css-hot-loader',
+                    MiniCssExtractPlugin.loader,    //style-loader
                     "css-loader",
                     {
                         loader: "postcss-loader",
                         options: {
                             plugins: [
                                 require("autoprefixer"), /*在这里添加*/
-                                require('postcss-px2rem')({remUnit: 5}),
                                 require('postcss-flexbugs-fixes'),
-
                             ]
                         }
                     },
                     "less-loader"
                 ]
-
             },
             {   //防止antd冲突的配置
                 test: /\.css$/,
@@ -97,22 +95,26 @@ module.exports = {
                 ]
             },
             {
-                test:/\.(png|jpg|gif|svg)$/,
-                use:[{
+                test: /\.(png|jpg|gif|svg)$/,
+                use: [{
                         loader:'url-loader',
                         options:{ // 这里的options选项参数可以定义多大的图片转换为base64
                             name: '[name].[ext]',
-                            limit:50000, // 表示小于50kb的图片转为base64,大于50kb的是路径
-                            outputPath:'images' //定义输出的图片文件夹
+                            limit: 50000, // 表示小于10kb的图片转为base64,大于50kb的是路径，因为如果转为base64,那么会占据js大小，使得加载js变慢
+                            outputPath: 'images' //定义输出的图片文件夹
                         }
                     },
                     {   //压缩图片要在file-loader之后使用
-                        loader:'image-webpack-loader',
-                        options:{
+                        loader: 'image-webpack-loader',
+                        options: {
                             bypassOnDebug: true
                         }
                     }
                 ]
+            },
+            {
+                test: /\.(htm|html)$/i,     //为了支持html里或img标签直接使用src属性插入图片，比如模板页标题图标就无法使用require
+                use: ['html-withimg-loader']
             }
 
         ]
