@@ -15,8 +15,8 @@ export default class RouteComponentTest extends React.PureComponent{
                         <a className="navbar-brand">路由管理</a>
                     </div>
                     <ul className="nav">
-                        <li className='navbar-nav'><NavLink activeStyle={activeStyle} to="/user/1">路由1</NavLink></li>
-                        <li className='navbar-nav'><NavLink activeStyle={activeStyle} to="/user/2">路由2</NavLink></li> {/*也可以设置activeClassName来设置样式*/}
+                        <li className='navbar-nav'><NavLink activeStyle={activeStyle} to="/routerComponentTest/1">路由1</NavLink></li>
+                        <li className='navbar-nav'><NavLink activeStyle={activeStyle} to="/routerComponentTest/2">路由2</NavLink></li> {/*也可以设置activeClassName来设置样式*/}
                         <li className='navbar-nav'><NavLink activeStyle={activeStyle} to="/home">跳转home页面</NavLink></li>
                     </ul>
                 </nav>
@@ -25,8 +25,8 @@ export default class RouteComponentTest extends React.PureComponent{
                     {/*exact 我们匹配/斜杠时候，就匹配第一个*/}
                     {/*想要实现这种根据url后缀显示不同组件，父组件route一定不能加exact属性，不然会因为严格匹配导致页面为空*/}
                     <Switch>
-                        <Route path="/user/1" component={test1}/>
-                        <Route path="/user/2" component={test2}/>
+                        <Route path="/routerComponentTest/1" component={test1}/>
+                        <Route path="/routerComponentTest/2" component={test2}/>
                     </Switch>
                 </div>
             </div>
