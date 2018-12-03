@@ -9,6 +9,7 @@ import { Provider } from 'react-redux'
 import { createStore } from 'redux'; 
 import {reducer} from './reducer/index.jsx'
 import Routes from './router/index.jsx'
+import 'whatwg-fetch';
 
 let store=createStore(reducer);
 
