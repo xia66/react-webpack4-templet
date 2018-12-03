@@ -6,7 +6,7 @@ export async function ws(method, options) {
             wsGET
     }
 }
-
+第9行增加git测试1
 
 /*
     fetch(url,{ // url: 请求地址
