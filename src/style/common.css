@@ -8,11 +8,6 @@ a{
 ul{
     list-style: none;
 }
-body {width:100%;font: normal 100% Helvetica, Arial, sans-serif; }
-html,body{
-	height:100%;
-}
-body{
-	font-size: 14px;
-	font-family:PingFangSC-Medium;
+#root {
+    min-width: 800px;
 }

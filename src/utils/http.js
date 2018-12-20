@@ -1,63 +1,123 @@
+import {message} from 'antd';
+//将参数对象转化为参数字符串
+export function parseQueryParams(data) {
+    let queryStr = '';
+    if(data) {
+        queryStr += '?';
+    }
+    for(key in data) {
+        queryStr += encodeURIComponent(key) + '=' + encodeURIComponent(data[key]) + '&'
+    }
+    queryStr = queryStr.slice(0, queryStr.length - 1)
+}
+
+export async function handleResponse(response, customHandler) {
+  // start to process response info
+    let isHandled = false,
+        code = response.code,
+        result = null;
+    if(typeof customHandler === 'function') {
+        isHandled = customHandler(response);
+    }
+    //如果没有处理函数且请求正确，则直接返回数据，
+    if(!isHandled){
+        if(response.code == 0) {
+            return response.data;
+        } else{
+            message.error(response.msg);
+            return response.data;
+        }
+    }else {
+        return isHandled;
+    }
+    return result;
+}
+
+async function commonHandler(options) {
+    let data = null;
+    try {
+        let response = await fetch(options.url, options);
+        if(response.ok) {
+            data = await response.json();
+        } else {
+            data = await response.text();
+        }
+    }catch(error) {
+        message.error(error.message);
+    }
+    return data;
+}
+
+async function wsGET(options) {
+    options.method = "GET";
+    options.credentials = "include";    //要不要携带 cookie 默认不携带 omit、same-origin 或者 include
+    options.mode = 'cors';
+    options.headers = _.assign({
+        "Content-Type": "application/json"
+    }, options.headers);
+    if(options.data) {
+        options.url = options.url + parseQueryParams(options.data);
+    }
+    return await commonHandler(options);
+}
+
+async function wsPOST(options) {
+    options.method = "POST";
+    options.credentials = "include";
+    options.mode = 'cors';
+    options.headers = _.assign({
+        "Content-Type": "application/json"
+    }, options.headers);
+    if(options.data) {
+        switch(options.headers["Content-Type"]) {
+            case 'application/x-www-form-urlencoded;charset=UTF-8':
+                options.body = Object.keys(options.data).map((key) => {
+                    if(options.data[key] instanceof Object) {
+                        return encodeURIComponent(key) + '=' + encodeURIComponent(JSON.stringify(options.data[key]));
+                    }else {
+                        return encodeURIComponent(key) + '=' + encodeURIComponent(options.data[key]);
+                    }
+                }).join('&')
+                break;
+            default: 
+                options.body = JSON.stringify(options.data);    //一般是'application/json'
+        }
+    }
+    return await commonHandler(options);
+}
+
+async function wsDelete(options) {
+  options.method = "DELETE";
+  options.credentials = "include";  //设置携带cookie
+  options.mode = 'cors';
+  options.headers = _.assign({
+    "Content-Type": "application/json"
+  }, options.headers);
+  return await commonHandler(options);
+}
+
 export async function ws(method, options) {
     let result = null;
     method = method ? method.toUpperCase() : '';
     switch(method) {
         case 'GET':
-            wsGET
+            result = wsGET(options)
+            break;
+        case 'POST':
+            result = wsPOST(options)
+            break;
+        case 'DELETE':
+            result = wsDELETE(options)
+            break;
+        default:
+            result = null;
     }
+    if(result) {
+        if(options.handler) {
+            result = await handleResponse(result, options.handler);
+        } else {
+            result = await handleResponse(result);
+        }
+    }
+    return result;
 }
-第9行增加git测试1
-第10行增加git测试2
-第11行增加git测试3
-
-/*
-    fetch(url,{ // url: 请求地址
-        method: "GET", // 请求的方法POST/GET等
-        headers : { // 请求头（可以是Headers对象，也可是JSON对象）
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }, 
-        body: , // 请求发送的数据 blob、BufferSource、FormData、URLSearchParams（get或head方法中不能包含body）
-        cache : 'default', // 是否缓存这个请求
-        credentials : 'same-origin', //要不要携带 cookie 默认不携带 omit、same-origin 或者 include
-        mode : "", 
-            mode,给请求定义一个模式确保请求有效
-            same-origin:只在请求同域中资源时成功，其他请求将被拒绝（同源策略）
-            cors : 允许请求同域及返回CORS响应头的域中的资源，通常用作跨域请求来从第三方提供的API获取数据
-            cors-with-forced-preflight:在发出实际请求前执行preflight检查
-            no-cors : 目前不起作用（默认）
-    }).then(resp => {
-        
-            Response 实现了 Body, 可以使用 Body 的 属性和方法:
-
-            resp.type // 包含Response的类型 (例如, basic, cors).
-
-            resp.url // 包含Response的URL.
-
-            resp.status // 状态码
-
-            resp.ok // 表示 Response 的成功还是失败
-
-            resp.headers // 包含此Response所关联的 Headers 对象 可以使用
-
-            resp.clone() // 创建一个Response对象的克隆
-
-            resp.arrayBuffer() // 返回一个被解析为 ArrayBuffer 格式的promise对象
-
-            resp.blob() // 返回一个被解析为 Blob 格式的promise对象
-
-            resp.formData() // 返回一个被解析为 FormData 格式的promise对象
-
-            resp.json() // 返回一个被解析为 Json 格式的promise对象
-
-            resp.text() // 返回一个被解析为 Text 格式的promise对象
-         
-        if(resp.status === 200) return resp.json(); 
-        // 注： 这里的 resp.json() 返回值不是 js对象，通过 then 后才会得到 js 对象
-        throw New Error ('false of json');
-    }).then(json => {
-        console.log(json);
-    }).catch(error => {
-        consolr.log(error);
-    })
-*/

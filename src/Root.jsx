@@ -2,7 +2,7 @@
 //这里注意把antd的样式文件放最上面，这样才能修改antd的样式
 //import 'antd/dist/antd.css';
 //引入公共样式
-import '$Static/common.css';
+import './style/common.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux'
