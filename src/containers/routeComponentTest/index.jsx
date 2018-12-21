@@ -21,9 +21,9 @@ export default class RouteComponentTest extends React.PureComponent{
                     </ul>
                 </nav>
                 <div>
-                    {/*Switch是匹配*/}
+                    {/*Switch只渲染第一个路由匹配的组件*/}
                     {/*exact 我们匹配/斜杠时候，就匹配第一个*/}
-                    {/*想要实现这种根据url后缀显示不同组件，父组件route一定不能加exact属性，不然会因为严格匹配导致页面为空*/}
+                    {/*想要实现这种根据url后缀显示不同组件，父组件route一定不能加exact属性，不然会因为严格匹配导致子组件无法显示，页面为空*/}
                     <Switch>
                         <Route path="/routerComponentTest/1" component={test1}/>
                         <Route path="/routerComponentTest/2" component={test2}/>

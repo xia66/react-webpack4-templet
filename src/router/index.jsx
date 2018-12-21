@@ -10,7 +10,7 @@ export default function(props) {
     return (
         <HashRouter>
             {/*HashRouter匹配的是#/后的url
-            Switch是从上往下的匹配第一个*/}
+            Switch是从上往下的匹配第一个,所以第一个要加exact，不然只会匹配首页*/}
             <Switch>
                 <Route exact path="/" component={Home} />
                 <Route path='/home' component={Home} />
