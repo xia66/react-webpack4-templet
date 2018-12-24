@@ -83,7 +83,12 @@ module.exports = {
                             ]
                         }
                     },
-                    "less-loader"
+                    {
+                        loader: "less-loader",
+                        options: {
+                            javascriptEnabled: true     //less-loader 4以上版本需要设置此项
+                        }
+                    }
                 ]
             },
             {   //防止antd冲突的配置
@@ -118,6 +123,10 @@ module.exports = {
             }
 
         ]
+    },
+
+    devServer: {
+        disableHostCheck: true
     },
 
     devtool: "source-map"//配置映射，打包后不方便调试，配置此项后可以看到源码，方便调试
