@@ -126,7 +126,11 @@ module.exports = {
     },
 
     devServer: {
-        disableHostCheck: true
+        disableHostCheck: true, //绕过host检查
+        historyApiFallback: true   //任意的404响应都被替代为index.html响应
+        /*这样设置就可以在开发环境使用BrowserHistory,
+        BrowserRouter会以真实URL向服务器发送请求，而因为前端单页面应用，服务器真实路径并不会有这个资源，所以资源不存在，所以需要服务器配置一直返回index.html(参考server.txt)，再由前端路由解决
+        HashRouter只会发送#前面的URl给服务器，所以不用配置也会只返回index.html*/
     },
 
     devtool: "source-map"//配置映射，打包后不方便调试，配置此项后可以看到源码，方便调试

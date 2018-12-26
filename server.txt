@@ -1,0 +1,36 @@
+//部分服务器配置解释hashhistory和browserhistory
+
+//hashhistory会把#号前面的路径返回给服务器，而#号前面的路径都一样，所以不用配置
+//而browserhistory会把所有路径返回，所以需要一些配置
+server {
+  listen  8080;
+  server_name  _;
+  location / {
+# 检查域名后缀
+#   if ($http_origin ~ \.xiaojukeji\.com) {
+#        add_header Access-Control-Allow-Origin $http_origin;
+#        add_header Access-Control-Allow-Methods GET,POST,OPTIONS;
+#        add_header Access-Control-Allow-Credentials true;
+#        add_header Access-Control-Allow-Headers DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type;
+#        add_header Access-Control-Max-Age 1728000;
+#   }
+   # options请求不转给后端，直接返回204
+   # 第二个if会导致上面的add_header无效，这是nginx的问题，这里直接重复执行下
+#   if ($request_method = OPTIONS) {
+#        add_header Access-Control-Allow-Origin $http_origin;
+#        add_header Access-Control-Allow-Methods GET,POST,OPTIONS;
+#        add_header Access-Control-Allow-Credentials true;
+#        add_header Access-Control-Allow-Headers DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type;
+#        add_header Access-Control-Max-Age 1728000;
+#        return 204;
+#   }
+    root /home/odin/bowenhan/codeStudio_fe/public;
+    index index.html;
+    default_type text/plain;
+    allow all;
+    try_files $uri /index.html;
+        location = /index.html {
+                    add_header Cache-Control "no-store";
+                        }
+  }
+}
