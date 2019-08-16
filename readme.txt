@@ -1,3 +1,4 @@
+最传统的react项目架构
 /components/   # 项目组件（用于路由组件内引用的可复用组件） 
 /containers/   # 路由组件（页面维度）
 /models/       # 数据模型（可以理解为store，用于存储数据与方法）
